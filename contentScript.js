@@ -11,7 +11,8 @@ const buttons = {
 	autoClickNext: [
 		'button.color-primary.hasLabel.hasIcon[data-uia="next-episode-seamless-button"]',
 		'button.hasLabel.hasIcon[data-uia="next-episode-seamless-button-draining"]',
-		{ text: 'Next Episode' },
+		{ selector: 'button > span > span', closest: 'button, [role="button"], a', text: ['Next Episode'] },
+		{ text: ['Next Episode'] },
 	],
 };
 
@@ -21,15 +22,34 @@ function findButton(match) {
 	}
 
 	if (match && match.selector) {
-		return document.querySelector(match.selector);
+		const elements = Array.from(document.querySelectorAll(match.selector));
+		for (const element of elements) {
+			const candidate = match.closest ? element.closest(match.closest) : element;
+			if (!candidate) {
+				continue;
+			}
+			if (match.text) {
+				const targetTexts = Array.isArray(match.text)
+					? match.text.map((text) => text.toLowerCase())
+					: [match.text.toLowerCase()];
+				const content = candidate.textContent && candidate.textContent.toLowerCase();
+				if (!content || !targetTexts.some((targetText) => content.includes(targetText))) {
+					continue;
+				}
+			}
+			return candidate;
+		}
+		return null;
 	}
 
 	if (match && match.text) {
-		const candidates = Array.from(document.querySelectorAll('button, [role="button"]'));
-		const targetText = match.text.toLowerCase();
+		const candidates = Array.from(document.querySelectorAll('button, [role="button"], a'));
+		const targetTexts = Array.isArray(match.text)
+			? match.text.map((text) => text.toLowerCase())
+			: [match.text.toLowerCase()];
 		return candidates.find((el) => {
 			const content = el.textContent && el.textContent.toLowerCase();
-			return content && content.includes(targetText);
+			return content && targetTexts.some((targetText) => content.includes(targetText));
 		});
 	}
 
