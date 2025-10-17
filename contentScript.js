@@ -11,7 +11,7 @@ const buttons = {
 	autoClickNext: [
 		'button.color-primary.hasLabel.hasIcon[data-uia="next-episode-seamless-button"]',
 		'button.hasLabel.hasIcon[data-uia="next-episode-seamless-button-draining"]',
-		{ selector: 'button > span > span', closest: 'button, [role="button"], a', text: ['Next Episode'] },
+		{ selector: 'button > span > span', closest: 'button, [role="button"]', text: ['Next Episode'] },
 		{ text: ['Next Episode'] },
 	],
 };
@@ -43,7 +43,7 @@ function findButton(match) {
 	}
 
 	if (match && match.text) {
-		const candidates = Array.from(document.querySelectorAll('button, [role="button"], a'));
+		const candidates = Array.from(document.querySelectorAll('button, [role="button"]'));
 		const targetTexts = Array.isArray(match.text)
 			? match.text.map((text) => text.toLowerCase())
 			: [match.text.toLowerCase()];
