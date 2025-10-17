@@ -1,8 +1,40 @@
 const buttons = {
-	autoClickSkip: ['button.button-primary.watch-video--skip-content-button[data-uia="player-skip-intro"]'],
-	autoClickSkipRecaps: ['button.button-primary.watch-video--skip-recaps-button', 'button.button-primary.watch-video--skip-content-button[data-uia="player-skip-recap"]'],
-    autoClickNext: ['button.color-primary.hasLabel.hasIcon[data-uia="next-episode-seamless-button"]', 'button.hasLabel.hasIcon[data-uia="next-episode-seamless-button-draining"]'],
+	autoClickSkip: [
+		'button.button-primary.watch-video--skip-content-button[data-uia="player-skip-intro"]',
+		{ text: 'Skip Intro' },
+	],
+	autoClickSkipRecaps: [
+		'button.button-primary.watch-video--skip-recaps-button',
+		'button.button-primary.watch-video--skip-content-button[data-uia="player-skip-recap"]',
+		{ text: 'Skip Recap' },
+	],
+	autoClickNext: [
+		'button.color-primary.hasLabel.hasIcon[data-uia="next-episode-seamless-button"]',
+		'button.hasLabel.hasIcon[data-uia="next-episode-seamless-button-draining"]',
+		{ text: 'Next Episode' },
+	],
 };
+
+function findButton(match) {
+	if (typeof match === 'string') {
+		return document.querySelector(match);
+	}
+
+	if (match && match.selector) {
+		return document.querySelector(match.selector);
+	}
+
+	if (match && match.text) {
+		const candidates = Array.from(document.querySelectorAll('button, [role="button"]'));
+		const targetText = match.text.toLowerCase();
+		return candidates.find((el) => {
+			const content = el.textContent && el.textContent.toLowerCase();
+			return content && content.includes(targetText);
+		});
+	}
+
+	return null;
+}
 
 function detectAndClick() {
 	try {
@@ -11,7 +43,7 @@ function detectAndClick() {
 				if (!data[key]) {
 					continue
 				}; 
-				const button = selectors.map(selector => document.querySelector(selector)).find(Boolean);
+				const button = selectors.map(findButton).find(Boolean);
 				if (button && !button.clicked) {
 					button.clicked = true;
 					button.click();
