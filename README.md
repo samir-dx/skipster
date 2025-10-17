@@ -11,6 +11,7 @@ Netflix theme (example):
 Features
 - Auto-skip intros, recaps and end credits where supported.
 - Manual skip and next-episode controls in the extension popup.
+- Per-site preferences saved locally (localStorage).
 - Minimal permissions — runs only on netflix.com and hotstar.com.
 
 Supported sites
