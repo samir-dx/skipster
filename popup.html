@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="heading">
+      <img id="site-logo" src="images/netflix-logo.png" alt="site-logo"/> SkipsTer</h1>
+      <div class="row">
+        <h4>Intro</h4>
+        <div class="checkbox_container">
+          <input type="checkbox" id="toggleSkip" />
+          <label for="toggleSkip"></label>
+        </div>
+      </div>
+      <div class="row">
+        <h4>Recaps</h4>
+        <div class="checkbox_container">
+          <input type="checkbox" id="toggleRecaps" />
+          <label for="toggleRecaps"></label>
+        </div>
+      </div>
+      <div class="row">
+        <h4>Next Episode</h4>
+        <div class="checkbox_container">
+          <input type="checkbox" id="toggleNext" />
+          <label for="toggleNext"></label>
+        </div>
+      </div>
+    </div>
+    <script src="./popup.js" type="module"></script>
+  </body>
+</html>

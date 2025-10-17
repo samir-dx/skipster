@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "SkipSter",
+  "version": "1.0",
+  "description": "Skip Intro/Credits, Recaps on Netflix & HotStar",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "192": "images/skipster-192.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [{
+    "matches": ["*://*.netflix.com/*", "*://*.hotstar.com/*"],
+    "js": ["contentScript.js"],
+    "run_at": "document_end"
+  }],
+  "permissions": ["storage", "tabs"],
+  "host_permissions": ["*://*.netflix.com/*", "*://*.hotstar.com/*"]
+}
