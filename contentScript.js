@@ -1,3 +1,9 @@
+const DEFAULT_FLAGS = {
+	autoClickNext: true,
+	autoClickSkip: true,
+	autoClickSkipRecaps: true,
+};
+
 const buttons = {
 	autoClickSkip: [
 		'button.button-primary.watch-video--skip-content-button[data-uia="player-skip-intro"]',
@@ -15,6 +21,38 @@ const buttons = {
 		{ text: ['Next Episode'] },
 	],
 };
+
+function withDefaults(flags) {
+	return { ...DEFAULT_FLAGS, ...(flags || {}) };
+}
+
+function getSiteKey(hostname) {
+	const h = (hostname || '').toLowerCase();
+	if (h.includes('netflix')) {
+		return 'netflix';
+	}
+	if (h.includes('hotstar') || h.includes('disney') || h.includes('jio')) {
+		return 'hotstar';
+	}
+	return 'netflix';
+}
+
+function readSitePreferences(cb) {
+	const siteKey = getSiteKey(window.location.hostname);
+	chrome.storage.local.get(['sitePreferences'], (data) => {
+		if (chrome.runtime.lastError) {
+			console.error('Error getting preferences:', chrome.runtime.lastError);
+			cb(withDefaults());
+			return;
+		}
+		const sitePreferences =
+			data &&
+			data.sitePreferences &&
+			typeof data.sitePreferences === 'object' &&
+			data.sitePreferences[siteKey];
+		cb(withDefaults(sitePreferences));
+	});
+}
 
 function findButton(match) {
 	if (typeof match === 'string') {
@@ -58,11 +96,11 @@ function findButton(match) {
 
 function detectAndClick() {
 	try {
-		chrome.storage.local.get(["autoClickNext", "autoClickSkip", "autoClickSkipRecaps"], (data) => {
+		readSitePreferences((preferences) => {
 			for (const [key, selectors] of Object.entries(buttons)) {
-				if (!data[key]) {
-					continue
-				}; 
+				if (!preferences[key]) {
+					continue;
+				}
 				const button = selectors.map(findButton).find(Boolean);
 				if (button && !button.clicked) {
 					button.clicked = true;

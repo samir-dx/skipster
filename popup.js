@@ -2,16 +2,35 @@ const nextCheckbox = document.getElementById("toggleNext");
 const skipCheckbox = document.getElementById("toggleSkip");
 const recapsCheckbox = document.getElementById("toggleRecaps");
 
+const DEFAULT_FLAGS = {
+  autoClickNext: true,
+  autoClickSkip: true,
+  autoClickSkipRecaps: true,
+};
+
 const LOGOS = {
   netflix: 'images/netflix-logo.png',
   hotstar: 'images/hotstar-logo.webp',
 };
+
+let activeSiteKey = null;
+
+function withDefaults(flags) {
+  return { ...DEFAULT_FLAGS, ...(flags || {}) };
+}
 
 function chooseLogo(hostname) {
   const h = (hostname || '').toLowerCase();
   if (h.includes('netflix')) return LOGOS.netflix;
   if (h.includes('hotstar') || h.includes('disney') || h.includes('jio')) return LOGOS.hotstar;
   return null; // return null when unknown so we can hide the img
+}
+
+function getSiteKey(hostname) {
+  const h = (hostname || '').toLowerCase();
+  if (h.includes('netflix')) return 'netflix';
+  if (h.includes('hotstar') || h.includes('disney') || h.includes('jio')) return 'hotstar';
+  return null;
 }
 
 function setSiteClassAndLogo(hostname) {
@@ -38,41 +57,108 @@ function setSiteClassAndLogo(hostname) {
   }
 }
 
+function setCheckboxDisabled(disabled) {
+  [nextCheckbox, skipCheckbox, recapsCheckbox].forEach((checkbox) => {
+    checkbox.disabled = !!disabled;
+  });
+}
+
+function applyPreferences(flags) {
+  const preferences = withDefaults(flags);
+  nextCheckbox.checked = !!preferences.autoClickNext;
+  skipCheckbox.checked = !!preferences.autoClickSkip;
+  recapsCheckbox.checked = !!preferences.autoClickSkipRecaps;
+}
+
+function loadPreferencesForActiveSite() {
+  if (!activeSiteKey) {
+    applyPreferences(DEFAULT_FLAGS);
+    return;
+  }
+
+  chrome.storage.local.get(['sitePreferences'], (data) => {
+    if (chrome.runtime.lastError) {
+      console.error('Error loading preferences:', chrome.runtime.lastError);
+      applyPreferences(DEFAULT_FLAGS);
+      return;
+    }
+    const sitePreferences =
+      data &&
+      data.sitePreferences &&
+      typeof data.sitePreferences === 'object' &&
+      data.sitePreferences[activeSiteKey];
+    applyPreferences(sitePreferences);
+  });
+}
+
+function persistPreference(flag, value) {
+  if (!activeSiteKey) {
+    return;
+  }
+
+  chrome.storage.local.get(['sitePreferences'], (data) => {
+    if (chrome.runtime.lastError) {
+      console.error('Error reading preferences before save:', chrome.runtime.lastError);
+      return;
+    }
+
+    const existing =
+      data && data.sitePreferences && typeof data.sitePreferences === 'object'
+        ? data.sitePreferences
+        : {};
+
+    const updatedForSite = { ...withDefaults(existing[activeSiteKey]), [flag]: value };
+    const nextPreferences = { ...existing, [activeSiteKey]: updatedForSite };
+
+    chrome.storage.local.set({ sitePreferences: nextPreferences }, () => {
+      if (chrome.runtime.lastError) {
+        console.error('Error saving preference:', chrome.runtime.lastError);
+      }
+    });
+  });
+}
+
 if (!chrome.storage) {
     console.error("chrome.storage is undefined. Ensure 'storage' permission is in manifest.json.");
 } else {
-    
-    chrome.storage.local.get(["autoClickNext", "autoClickSkip", "autoClickSkipRecaps"], (data) => {
-        nextCheckbox.checked = !!data.autoClickNext; 
-        skipCheckbox.checked = !!data.autoClickSkip;
-        recapsCheckbox.checked = !!data.autoClickSkipRecaps;
-    });
 
-    
     nextCheckbox.addEventListener("change", () => {
-        chrome.storage.local.set({ autoClickNext: nextCheckbox.checked });
+        persistPreference('autoClickNext', nextCheckbox.checked);
     });
 
-    
     skipCheckbox.addEventListener("change", () => {
-        chrome.storage.local.set({ autoClickSkip: skipCheckbox.checked });
+        persistPreference('autoClickSkip', skipCheckbox.checked);
     });
 
-    
     recapsCheckbox.addEventListener("change", () => {
-        chrome.storage.local.set({ autoClickSkipRecaps: recapsCheckbox.checked });
+        persistPreference('autoClickSkipRecaps', recapsCheckbox.checked);
     });
 }
 
+setCheckboxDisabled(true);
+applyPreferences(DEFAULT_FLAGS);
+
 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
 	if (!tabs || !tabs[0] || !tabs[0].url) {
+		activeSiteKey = null;
 		setSiteClassAndLogo('');
+		setCheckboxDisabled(true);
 		return;
 	}
 	try {
 		const url = new URL(tabs[0].url);
+		activeSiteKey = getSiteKey(url.hostname);
 		setSiteClassAndLogo(url.hostname);
+		if (!activeSiteKey) {
+			setCheckboxDisabled(true);
+			applyPreferences(DEFAULT_FLAGS);
+			return;
+		}
+		setCheckboxDisabled(false);
+		loadPreferencesForActiveSite();
 	} catch (e) {
+		activeSiteKey = null;
 		setSiteClassAndLogo('');
+		setCheckboxDisabled(true);
 	}
 });
