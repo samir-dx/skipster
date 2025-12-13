@@ -27,10 +27,16 @@ body {
 }
 
 body.netflix #site-logo,
-body.hotstar #site-logo {
+body.hotstar #site-logo,
+body.prime #site-logo {
     display: inline-block;
 }
 
+
+body.prime #site-logo {
+	margin-top: 2px;
+	height: 22px;
+}
 
 input[type=checkbox]{
 	height: 0;
@@ -61,8 +67,16 @@ label:after {
 	transition: all 0.3s cubic-bezier(0.215, 0.610, 0.355, 1);
 }
 
-body:not(.hotstar) input:checked + label {
+input:checked + label {
+	background: #d5c9c8;
+}
+
+body.netflix input:checked + label {
     background: #e50914;
+}
+
+body.prime input:checked + label {
+    background: #0070f0;
 }
 
 body.hotstar input:checked + label {
@@ -97,4 +111,29 @@ label:active:after {
 }
 .checkbox_container {
     display: flex;
+}
+
+#unsupported {
+	align-self: flex-start;
+	padding-left: 4px;
+	margin-bottom: 12px;
+}
+
+#unsupported p {
+	margin: 8px 0 12px;	
+}
+
+.unsupported-logo-container {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	
+}
+
+.unsupported-logo-container a {
+	height: 24px;
+}
+
+.unsupported-logo {
+	height: 24px;
 }

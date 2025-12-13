@@ -13,11 +13,11 @@
     "service_worker": "background.js"
   },
   "content_scripts": [{
-    "matches": ["*://*.netflix.com/*", "*://*.hotstar.com/*"],
+    "matches": ["*://*.netflix.com/*", "*://*.hotstar.com/*", "*://*.primevideo.com/*"],
     "js": ["contentScript.js"],
     "all_frames": true,
     "run_at": "document_end"
   }],
   "permissions": ["storage", "tabs"],
-  "host_permissions": ["*://*.netflix.com/*", "*://*.hotstar.com/*"]
+  "host_permissions": ["*://*.netflix.com/*", "*://*.hotstar.com/*", "*://*.primevideo.com/*"]
 }
