@@ -30,6 +30,14 @@ const BUTTONS = {
       ],
       platform: ['netflix', 'hotstar']
     },
+    {
+      selectors: [
+        '.atv-web-player-next-episode-button-wrapper.button',
+		'.atvwebpplayersdk-nextupcard-button',
+		'.atvwebplayersdk-nextupcard-button'
+      ],
+      platform: ['primevideo']
+    }
   ],
 };
 
@@ -82,41 +90,98 @@ function findButton(match) {
   return null;
 }
 
+/**
+ * Safely call chrome.storage.local.get.
+ * - If storage API isn't available, calls cb with an empty object.
+ * - Catches runtime.lastError and exceptions inside the callback.
+ * - Silently ignores "Extension context invalidated" errors.
+ */
+function safeStorageGet(keys, cb) {
+  try {
+    const hasStorage =
+      typeof chrome !== "undefined" &&
+      chrome &&
+      chrome.storage &&
+      chrome.storage.local &&
+      typeof chrome.storage.local.get === "function";
+
+    if (!hasStorage) {
+      cb({});
+      return;
+    }
+
+    chrome.storage.local.get(keys, (data) => {
+      try {
+        if (chrome.runtime && chrome.runtime.lastError) {
+          const msg = chrome.runtime.lastError.message || "";
+          if (msg.includes("Extension context invalidated")) {
+            // Extension unloaded/reloaded — ignore silently.
+            return;
+          }
+          console.error("SkipSter storage error:", chrome.runtime.lastError);
+          // continue with whatever data we got (or empty)
+        }
+        cb(data || {});
+      } catch (innerErr) {
+        if (
+          innerErr &&
+          innerErr.message &&
+          innerErr.message.includes("Extension context invalidated")
+        ) {
+          return;
+        }
+        console.error("SkipSter storage callback threw:", innerErr);
+        cb({});
+      }
+    });
+  } catch (err) {
+    if (err && err.message && err.message.includes("Extension context invalidated")) {
+      return;
+    }
+    console.error("SkipSter safeStorageGet failed:", err);
+    cb({});
+  }
+}
+
 function detectAndClick() {
   try {
     const hostname = window.location.hostname.toLowerCase();
-    chrome.storage.local.get(
+    safeStorageGet(
       ["autoClickNext", "autoClickSkip", "autoClickSkipRecaps"],
       (data) => {
-        for (const [key, selectorArr] of Object.entries(BUTTONS)) {
-          if (!data[key]) {
-            continue;
-          }
+        try {
+          for (const [key, selectorArr] of Object.entries(BUTTONS)) {
+            if (!data[key]) {
+              continue;
+            }
 
-          if (!Array.isArray(selectorArr)) {
-            continue;
-          }
+            if (!Array.isArray(selectorArr)) {
+              continue;
+            }
 
-          const cusSelector =
-            selectorArr.find(
-              (item) =>
-                Array.isArray(item.platform) &&
-                item.platform.some((p) => hostname.includes(p))
-            ) || selectorArr.find((item) => !item.platform);
+            const cusSelector =
+              selectorArr.find(
+                (item) =>
+                  Array.isArray(item.platform) &&
+                  item.platform.some((p) => hostname.includes(p))
+              ) || selectorArr.find((item) => !item.platform);
 
-          if (!cusSelector) continue;
+            if (!cusSelector) continue;
 
-          const selectors = Array.isArray(cusSelector.selectors)
-            ? cusSelector.selectors
-            : [];
+            const selectors = Array.isArray(cusSelector.selectors)
+              ? cusSelector.selectors
+              : [];
 
-          const button = selectors.map(findButton).find(Boolean);
-          if (button && button instanceof Element) {
-            if (!button.dataset.skipsterClicked) {
-              button.dataset.skipsterClicked = "1";
-              button.click();
+            const button = selectors.map(findButton).find(Boolean);
+            if (button && button instanceof Element) {
+              if (!button.dataset.skipsterClicked) {
+                button.dataset.skipsterClicked = "1";
+                button.click();
+              }
             }
           }
+        } catch (cbErr) {
+          console.error("SkipSter content script error (callback):", cbErr);
         }
       }
     );
