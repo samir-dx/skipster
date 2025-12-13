@@ -1,12 +1,15 @@
-# SkipSter — Skip intros & credits on Netflix & Hotstar
+# SkipSter — Skip intros & credits on Netflix ,Hotstar & PrimeVideo
 
-Browser extension that auto-detects and skips intros, recaps and end credits on Netflix and Hotstar. The extension adapts to each site's UI, so the in-extension controls follow the site's visual theme.
+Browser extension that auto-detects and skips intros, recaps and end credits on Netflix, Hotstar & PrimeVideo. The extension adapts to each site's UI, so the in-extension controls follow the site's visual theme.
 
 Hotstar theme (example):
-![Hotstar View](https://raw.githubusercontent.com/samir-cogoport/store/refs/heads/main/images/hotstar-view.png)
+![Hotstar View](https://github.com/samir-dx/store/blob/main/images/hotstar-view.png)
 
 Netflix theme (example):
-![Netflix View](https://raw.githubusercontent.com/samir-cogoport/store/refs/heads/main/images/netflix-view.png)
+![Netflix View](https://github.com/samir-dx/store/blob/main/images/netflix-view.png)
+
+PrimeVideo theme (example):
+![Netflix View](https://github.com/samir-dx/store/blob/main/images/prime-view.png)
 
 Features
 - Auto-skip intros, recaps and end credits where supported.
@@ -16,6 +19,7 @@ Features
 Supported sites
 - netflix.com
 - hotstar.com
+- videoprime.com
 
 Installation (developer / local)
 1. Clone the repo: git clone https://github.com/samir-dx/skipster
