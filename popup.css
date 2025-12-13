@@ -120,7 +120,8 @@ label:active:after {
 }
 
 #unsupported p {
-	margin: 8px 0 12px;	
+	margin: 8px 0 14px;	
+	font-size: 16px;
 }
 
 .unsupported-logo-container {
