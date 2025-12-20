@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "SkipSter",
-  "version": "1.0",
-  "description": "Skip Intro/Credits, Recaps on Netflix & HotStar",
+  "version": "1.1",
+  "description": "Skip Intro/Credits, Recaps on Netflix, HotStar & Prime Video",
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
