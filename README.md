@@ -1,4 +1,4 @@
-# SkipSter — Skip intros & credits on Netflix, Hotstar & PrimeVideo
+# SkipSter — Skip Intros & credits on Netflix, Hotstar & PrimeVideo
 
 Browser extension that auto-detects and skips intros, recaps and end credits on Netflix, Hotstar & PrimeVideo. The extension adapts to each site's UI, so the in-extension controls follow the site's visual theme.
 
