@@ -25,6 +25,6 @@ Security and updates
 
 Disclaimer
 - SkipSter is not affiliated with Netflix, Inc.
-- If you discover a security issue or have privacy questions, please open an issue in the GitHub repository: https://github.com/samir-dx/skipster
+- If you discover a security issue or have privacy questions, please open an issue in the GitHub repository: https://github.com/samir-dx/skipster.
 
 If you have questions about this policy, contact us via the GitHub repository.
