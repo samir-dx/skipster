@@ -9,7 +9,7 @@ What we collect
 - The extension uses localStorage in your browser only to save user preferences (for example: enable/disable auto-skip). These settings remain on your device.
 
 Permissions and scope
-- The extension only requests the minimum permissions required to run on netflix, hotstar & primevideo (to read the page DOM and control playback UI). It does not access other websites or your browsing history.
+- The extension only requests the minimum permissions required to run on netflix, hotstar & primevideo (to read the page DOM and control playback UI). It does not access other websites or your browsing history
 - No network requests are made to transmit user data to third parties.
 
 Third-party components
